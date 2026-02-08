@@ -257,6 +257,10 @@
 
     findExisting(month, lob) {
       const dateOnly = Utils.yyyyMmToDateOnly(month);
+      if (!dateOnly) {
+        console.warn('findExisting: invalid month format', month);
+        return $.Deferred().resolve(null).promise();
+      }
       const select = [CONFIG.ENTITY_ID_FIELD, 'cr650_reportmonth', 'cr650_lineofbusiness'].join(',');
 
       let filter = `cr650_reportmonth eq ${dateOnly} and cr650_lineofbusiness eq ${lob}`;
@@ -320,6 +324,17 @@
      AUTO-CALC MANAGER
   ========================== */
   const AutoCalcManager = {
+    // Track pending auto-calc requests per form type
+    _pending: { petromin: 0, gulf: 0, commercial: 0 },
+
+    isLoading(formType) {
+      return this._pending[formType] > 0;
+    },
+
+    isAnyLoading() {
+      return Object.values(this._pending).some(v => v > 0);
+    },
+
     fillComplaints(formType, month) {
       const lobMap = {
         petromin: CONFIG.LOB.Petromin,
@@ -329,8 +344,9 @@
       const lob = lobMap[formType];
       const input = document.getElementById(formType + 'ComplaintHandled');
 
-      if (!input || !month) return;
+      if (!input || !month) return $.Deferred().resolve().promise();
 
+      this._pending[formType]++;
       input.placeholder = 'Loading...';
 
       // Calculate start and end of month
@@ -340,7 +356,6 @@
       const lastDay = new Date(year, monthNum, 0).getDate();
       const endDate = `${month}-${lastDay.toString().padStart(2, '0')}`;
 
-      // ✅ FIXED: Add user filter
       let filter = `cr650_lob eq ${lob} and cr650_complaintdate ge ${startDate} and cr650_complaintdate le ${endDate}`;
 
       // Add user filter if available
@@ -351,7 +366,7 @@
 
       const url = `${CONFIG.API_BASE}/cr650_tsecomplaintses?$select=cr650_status&$filter=${encodeURIComponent(filter)}&$top=1000`;
 
-      webapi.safeAjax({ type: 'GET', url })
+      return webapi.safeAjax({ type: 'GET', url })
         .done((res) => {
           const data = res.value || [];
           const total = data.length;
@@ -369,6 +384,9 @@
           console.error(`Failed to load complaints for ${formType}:`, err);
           input.value = 0;
           input.placeholder = '0';
+        })
+        .always(() => {
+          this._pending[formType]--;
         });
     },
 
@@ -381,8 +399,9 @@
       const lob = lobMap[formType];
       const input = document.getElementById(formType + 'FieldTrial');
 
-      if (!input || !month) return;
+      if (!input || !month) return $.Deferred().resolve().promise();
 
+      this._pending[formType]++;
       input.placeholder = 'Loading...';
 
       // Calculate start and end of month
@@ -392,7 +411,6 @@
       const lastDay = new Date(year, monthNum, 0).getDate();
       const endDate = `${month}-${lastDay.toString().padStart(2, '0')}`;
 
-      // ✅ FIXED: Add user filter
       let filter = `cr650_lob eq ${lob} and cr650_startdate ge ${startDate} and cr650_startdate le ${endDate}`;
 
       // Add user filter if available
@@ -403,7 +421,7 @@
 
       const url = `${CONFIG.API_BASE}/cr650_tsefieldtrialses?$select=cr650_status&$filter=${encodeURIComponent(filter)}&$top=1000`;
 
-      webapi.safeAjax({ type: 'GET', url })
+      return webapi.safeAjax({ type: 'GET', url })
         .done((res) => {
           const data = res.value || [];
           const total = data.length;
@@ -422,6 +440,9 @@
           console.error(`Failed to load trials for ${formType}:`, err);
           input.value = 0;
           input.placeholder = '0';
+        })
+        .always(() => {
+          this._pending[formType]--;
         });
     },
 
@@ -521,6 +542,12 @@
     },
 
     saveDraft(formType) {
+      // Block save if auto-calc fields are still loading (would save stale/zero values)
+      if (AutoCalcManager.isLoading(formType)) {
+        Notify.warning('Please wait — complaints and field trials are still loading.', 'Auto-Calc In Progress');
+        return;
+      }
+
       const spinner = document.getElementById(formType + 'Spinner');
       spinner?.classList.remove('hidden');
 
@@ -594,6 +621,9 @@
               cr650_dvrendorsement: 'dvrEndorsement'
             };
 
+            // Auto-calculated fields should only be populated by AutoCalcManager (live from source tables)
+            const autoCalcFields = ['cr650_complainthandled', 'cr650_fieldtrial'];
+
             Object.keys(fieldMap).forEach(dataverseField => {
               const uiField = fieldMap[dataverseField];
               const value = record[dataverseField];
@@ -607,6 +637,10 @@
                 const id = `${prefix}${uiField.charAt(0).toUpperCase()}${uiField.slice(1)}`;
                 const el = document.querySelector(id);
                 if (el) {
+                  // Skip auto-calc fields unless the record is already submitted (read-only view)
+                  if (autoCalcFields.includes(dataverseField) && record.cr650_status !== CONFIG.STATUS.Submitted) {
+                    return;
+                  }
                   el.value = displayValue;
                   if (record.cr650_status === CONFIG.STATUS.Submitted) {
                     el.readOnly = true;
@@ -933,8 +967,11 @@
       // Reset submission state when month changes
       AppState.officiallySubmitted = false;
 
-      // Re-enable all form fields
+      // Re-enable form fields, but preserve auto-calculated fields (complaints & field trials)
+      const autoCalcIds = ['petrominComplaintHandled', 'gulfComplaintHandled', 'commercialComplaintHandled',
+        'petrominFieldTrial', 'gulfFieldTrial', 'commercialFieldTrial'];
       document.querySelectorAll('input[type="number"], input[type="month"]').forEach(el => {
+        if (autoCalcIds.includes(el.id)) return;
         el.readOnly = false;
         el.style.backgroundColor = '';
         el.style.cursor = '';
@@ -1089,6 +1126,12 @@
       const spinner = document.getElementById('submitSpinner');
       if (btn?.disabled) return;
 
+      // ✅ CHECK 0: Block if auto-calc is still loading
+      if (AutoCalcManager.isAnyLoading()) {
+        Notify.warning('Please wait — complaints and field trials are still loading.', 'Auto-Calc In Progress');
+        return;
+      }
+
       // ✅ CHECK 1: All drafts must be complete
       if (!AppState.petromin.isDraftComplete || !AppState.gulf.isDraftComplete || !AppState.commercial.isDraftComplete) {
         Notify.error('Complete all drafts first.', 'Incomplete Drafts');
@@ -1209,6 +1252,12 @@
       const queue = JSON.parse(localStorage.getItem('tsr_offline_queue') || '[]');
       if (!queue.length) return;
 
+      const removeFromQueue = (itemId) => {
+        const updated = JSON.parse(localStorage.getItem('tsr_offline_queue') || '[]').filter(q => q.id !== itemId);
+        localStorage.setItem('tsr_offline_queue', JSON.stringify(updated));
+        AppState.offlineQueue = updated;
+      };
+
       console.log(`Processing ${queue.length} offline submissions...`);
       queue.forEach(item => {
         item.petromin.lob = CONFIG.LOB.Petromin;
@@ -1220,14 +1269,17 @@
           DataverseAPI.submitOrUpdate(item.gulf),
           DataverseAPI.submitOrUpdate(item.commercial)
         ]).then(() => {
-          const updated = JSON.parse(localStorage.getItem('tsr_offline_queue') || '[]').filter(q => q.id !== item.id);
-          localStorage.setItem('tsr_offline_queue', JSON.stringify(updated));
-          AppState.offlineQueue = updated;
+          removeFromQueue(item.id);
           AppState.totalSubmittedReports += 3;
           WorkflowManager.updateProgress();
           Notify.success('Offline submission processed.', 'Queue');
         }).catch((e) => {
           console.error('Offline processing failed', e);
+          // Remove items with permanent (4xx) errors — only keep retryable server/network errors
+          if (e?.status && e.status >= 400 && e.status < 500) {
+            removeFromQueue(item.id);
+            Notify.error(`Offline submission from ${new Date(item.timestamp).toLocaleDateString()} failed permanently and was removed. Please re-enter the data.`, 'Queue Error');
+          }
         });
       });
     }
