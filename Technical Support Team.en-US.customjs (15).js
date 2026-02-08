@@ -559,14 +559,16 @@
     },
 
     loadDrafts() {
-      const currentMonth = Utils.currentMonth();
       const checks = [];
 
       ['petromin', 'gulf', 'commercial'].forEach(ft => {
         const lobMap = { petromin: CONFIG.LOB.Petromin, gulf: CONFIG.LOB.Gulf, commercial: CONFIG.LOB.Commercial };
         const lob = lobMap[ft];
 
-        const promise = DataverseAPI.findExisting(currentMonth, lob)
+        const monthInput = document.querySelector(`#${ft}Month`);
+        const selectedMonth = (monthInput && monthInput.value) ? monthInput.value : Utils.currentMonth();
+
+        const promise = DataverseAPI.findExisting(selectedMonth, lob)
           .then(recordId => {
             if (!recordId) return null;
 
@@ -640,7 +642,8 @@
         if (submittedCount === 3) {
           AppState.officiallySubmitted = true;
           WorkflowManager.updateProgress();
-          Notify.info(`Reports for ${Utils.formatMonth(currentMonth)} are already submitted.`, 'Already Submitted');
+          const displayMonth = document.querySelector('#petrominMonth')?.value || Utils.currentMonth();
+          Notify.info(`Reports for ${Utils.formatMonth(displayMonth)} are already submitted.`, 'Already Submitted');
         }
       });
     },
