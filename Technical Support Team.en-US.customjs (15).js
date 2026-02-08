@@ -918,7 +918,18 @@
       this.updateNavigationButtons();
     },
 
-    onMonthChange() {
+    onMonthChange(sourceInputId) {
+      // Sync all month inputs to the same value
+      const sourceInput = sourceInputId ? document.getElementById(sourceInputId) : null;
+      const selectedMonth = sourceInput?.value || Utils.currentMonth();
+
+      ['petrominMonth', 'gulfMonth', 'commercialMonth'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.value !== selectedMonth) {
+          el.value = selectedMonth;
+        }
+      });
+
       // Reset submission state when month changes
       AppState.officiallySubmitted = false;
 
@@ -1100,9 +1111,17 @@
         return;
       }
 
+      // Auto-sync months if they somehow drifted apart
       if (!(petrominData.month === gulfData.month && petrominData.month === commercialData.month)) {
-        Notify.error('All forms must use the same reporting month.', 'Month Mismatch');
-        return;
+        const resolvedMonth = petrominData.month || gulfData.month || commercialData.month;
+        ['petrominMonth', 'gulfMonth', 'commercialMonth'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = resolvedMonth;
+        });
+        petrominData.month = resolvedMonth;
+        gulfData.month = resolvedMonth;
+        commercialData.month = resolvedMonth;
+        Notify.info('Reporting month has been aligned across all forms.', 'Month Synchronized');
       }
 
       const currentMonth = Utils.currentMonth();
@@ -1496,6 +1515,8 @@
      EVENT HANDLERS
   ========================== */
   const EventHandlers = {
+    _monthChangeTimer: null,
+
     init() {
       const debounced = Utils.debounce(() => WorkflowManager.updateProgress(), CONFIG.DEBOUNCE_DELAY);
 
@@ -1503,9 +1524,11 @@
         input.addEventListener('input', debounced);
         input.addEventListener('change', function () {
           debounced();
-          // If month changed, check submission status
+          // If month changed, sync all months and reload data
           if (this.type === 'month') {
-            setTimeout(() => WorkflowManager.onMonthChange(), 500);
+            const inputId = this.id;
+            clearTimeout(EventHandlers._monthChangeTimer);
+            EventHandlers._monthChangeTimer = setTimeout(() => WorkflowManager.onMonthChange(inputId), 500);
           }
         });
         input.addEventListener('input', function () {
