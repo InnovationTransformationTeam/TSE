@@ -1,0 +1,820 @@
+<div id="tsr-app">
+  <!-- Notification container for Notify.show(...) -->
+  <div id="notificationContainer" aria-live="polite" aria-atomic="true" class="notification-container"></div>
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" aria-hidden="true" aria-live="polite" class="loading-overlay hidden">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+      <p>Loading...</p>
+    </div>
+  </div>
+<!-- Executive Dashboard Header with Integrated Workflow -->
+<section class="app-header-executive">
+  <div class="executive-top-bar">
+    <div class="executive-brand">
+      <div class="executive-logo">
+        <span class="executive-logo-text">
+          <span class="logo-petro">PETRO</span><span class="logo-lube">LUBE</span>
+        </span>
+      </div>
+      <div class="executive-app-title">Technical Support Reports</div>
+    </div>
+    <div class="executive-user-info">
+      <span id="userInfo">Welcome back</span>
+      <div class="user-avatar" id="userAvatar">U</div>
+    </div>
+  </div>
+  
+  <div class="executive-main-content">
+    <div class="executive-welcome">
+        <h1><strong>TSE</strong> Monthly Reporting</h1>
+        <p>Complete your monthly activity reports for all three business lines</p>
+    </div>
+    <div class="executive-progress-workflow-card">
+      <!-- Progress Section -->
+      <div class="executive-progress-section">
+        <div class="executive-progress-header">
+          <div class="executive-progress-title">
+            <div class="progress-icon-box">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="executive-progress-text">
+              <h3>Your Progress</h3>
+              <p id="progressStatus">0 of 3 reports completed</p>
+            </div>
+          </div>
+          <div id="overallPercentage" class="executive-progress-percentage">0%</div>
+        </div>
+        <div class="executive-progress-bar">
+          <div id="overallProgressBar" class="executive-progress-fill" style="width: 0%;"></div>
+        </div>
+      </div>
+      
+      <!-- Workflow Navigation Section -->
+      <div class="executive-workflow-section">
+        <div class="executive-workflow-grid">
+          <div data-step="petromin" class="executive-workflow-step active">
+            <div class="workflow-step-marker">
+              <span class="step-number">1</span>
+              <i class="fas fa-check step-complete hidden"></i>
+            </div>
+            <div class="workflow-step-content">
+              <div class="workflow-step-title">Petromin Report</div>
+              <div class="workflow-step-description">Monthly activity metrics</div>
+            </div>
+          </div>
+          
+          <div data-step="gulf" class="executive-workflow-step disabled">
+            <div class="workflow-step-marker">
+              <span class="step-number">2</span>
+              <i class="fas fa-check step-complete hidden"></i>
+            </div>
+            <div class="workflow-step-content">
+              <div class="workflow-step-title">Gulf Report</div>
+              <div class="workflow-step-description">Monthly activity metrics</div>
+            </div>
+          </div>
+          
+          <div data-step="commercial" class="executive-workflow-step disabled">
+            <div class="workflow-step-marker">
+              <span class="step-number">3</span>
+              <i class="fas fa-check step-complete hidden"></i>
+            </div>
+            <div class="workflow-step-content">
+              <div class="workflow-step-title">Commercial Report</div>
+              <div class="workflow-step-description">Monthly activity metrics</div>
+            </div>
+          </div>
+          
+          <div data-step="review" class="executive-workflow-step disabled">
+            <div class="workflow-step-marker">
+              <span class="step-number">4</span>
+              <i class="fas fa-check step-complete hidden"></i>
+            </div>
+            <div class="workflow-step-content">
+              <div class="workflow-step-title">Review & Submit</div>
+              <div class="workflow-step-description">Final validation</div>
+            </div>
+          </div>
+          
+          <div data-step="dashboard" class="executive-workflow-step">
+            <div class="workflow-step-marker">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="workflow-step-content">
+              <div class="workflow-step-title">TSE Dashboard</div>
+              <div class="workflow-step-description">Personal KPIs</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Petromin Form Panel -->
+    <div id="petrominContent" class="report-panel active">
+      <div class="panel-header">
+        <div class="panel-brand petromin">
+          <div class="brand-icon"><i class="fas fa-building"></i></div>
+          <div class="brand-text">
+            <h2>Petromin Technical Report</h2>
+            <p>Enter monthly activity metrics for Petromin line of business</p>
+          </div>
+        </div>
+        <div class="panel-actions">
+          <button onclick="saveDraft('petromin')" class="action-btn secondary">
+            <i class="fas fa-save"></i>
+            Save Progress
+          </button>
+        </div>
+      </div>
+      <form id="petrominForm" class="professional-form">
+        <!-- Report Period -->
+        <div class="form-section">
+          <div class="section-header">
+            <h3>Report Period</h3>
+            <p>Select the reporting month for this submission</p>
+          </div>
+          <div class="period-selector">
+            <div class="input-group">
+              <label for="petrominMonth">Reporting Month</label><input type="month" id="petrominMonth" name="month" required="" class="form-input" />
+              <div class="input-note">Reports are typically submitted monthly</div>
+            </div>
+          </div>
+        </div>
+        <!-- Activity Metrics -->
+        <div class="form-section">
+          <div class="section-header">
+            <h3>Activity Metrics</h3>
+            <p>Enter the number of activities completed during the reporting period</p>
+          </div>
+          <div class="metrics-grid">
+            <!-- Courtesy Visits -->
+            <div data-field="customerCourtesyVisits" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-users"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">Customer Courtesy Visits</label>
+                <p class="metric-description">Regular customer relationship and service visits</p>
+                <input type="number" id="petrominCustomerCourtesyVisits" name="customerCourtesyVisits" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="petrominCustomerCourtesyVisits-error" class="field-validation"></div>
+              </div>
+            </div>
+            <!-- Product Equivalent -->
+            <div data-field="productEquivalent" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-box"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">Technical enquiries / Proposals</label>
+                <p class="metric-description">Product equivalent assessments and evaluations</p>
+                <input type="number" id="petrominProductEquivalent" name="productEquivalent" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="petrominProductEquivalent-error" class="field-validation"></div>
+              </div>
+            </div>
+            <!-- Customer Training -->
+            <!-- Internal Technical Sessions -->
+              <div data-field="internalTraining" class="metric-card">
+                <div class="metric-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                <div class="metric-content">
+                  <label class="metric-label">Internal Technical Sessions</label>
+                  <p class="metric-description">Training sessions conducted internally</p>
+                  <input type="number" id="petrominInternalTraining" name="internalTraining" 
+                          min="0" max="9999" step="1" onwheel="this.blur()" 
+                          placeholder="0" required class="form-input" />
+                  <div id="petrominInternalTraining-error" class="field-validation"></div>
+                </div>
+              </div>
+
+              <!-- Onsite Customer Trainings -->
+              <div data-field="onsiteTraining" class="metric-card">
+                <div class="metric-icon"><i class="fas fa-users-cog"></i></div>
+                <div class="metric-content">
+                  <label class="metric-label">Onsite Customer Trainings</label>
+                  <p class="metric-description">Training sessions at customer sites</p>
+                  <input type="number" id="petrominOnsiteTraining" name="onsiteTraining" 
+                          min="0" max="9999" step="1" onwheel="this.blur()" 
+                          placeholder="0" required class="form-input" />
+                  <div id="petrominOnsiteTraining-error" class="field-validation"></div>
+                </div>
+              </div>
+            <!-- Business Opportunity -->
+            <div data-field="businessOpportunity" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-chart-line"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">Business Opportunities</label>
+                <p class="metric-description">New business opportunities identified</p>
+                <input type="number" id="petrominBusinessOpportunity" name="businessOpportunity" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="petrominBusinessOpportunity-error" class="field-validation"></div>
+              </div>
+            </div>
+            <!-- Complaint Handled -->
+            <div data-field="complaintHandled" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-handshake"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">Complaints Handled</label>
+                <p class="metric-description">Customer complaints resolved and closed</p>
+                <input type="number" id="petrominComplaintHandled" name="complaintHandled" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="petrominComplaintHandled-error" class="field-validation"></div>
+              </div>
+            </div>
+            <!-- Field Trial -->
+            <div data-field="fieldTrial" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-flask"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">Product Field Trials</label>
+                <p class="metric-description">Product field trials and testing conducted</p>
+                <input type="number" id="petrominFieldTrial" name="fieldTrial" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="petrominFieldTrial-error" class="field-validation"></div>
+              </div>
+            </div>
+            <!-- Lubrication Survey -->
+            <div data-field="lubricationSurvey" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-cogs"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">Lubrication Surveys</label>
+                <p class="metric-description">Lubrication system assessments and audits</p>
+                <input type="number" id="petrominLubricationSurvey" name="lubricationSurvey" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="petrominLubricationSurvey-error" class="field-validation"></div>
+              </div>
+            </div>
+            <!-- DVR Endorsement -->
+            <div data-field="dvrEndorsement" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-certificate"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">DVR Endorsements</label>
+                <p class="metric-description">DVR endorsements processed and approved</p>
+                <input type="number" id="petrominDvrEndorsement" name="dvrEndorsement" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="petrominDvrEndorsement-error" class="field-validation"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Save Draft -->
+        <div class="submit-section">
+          <button type="button" onclick="saveDraft('petromin')" class="action-btn secondary">
+            <span id="petrominSpinner" class="btn-spinner hidden"><i class="fas fa-spinner fa-spin"></i></span><i class="fas fa-save"></i>
+            Save Draft &amp; Continue
+          </button>
+          <div class="draft-note">
+            <i class="fas fa-info-circle"></i>
+            This will save your progress locally. Final submission happens in the Review step.
+          </div>
+        </div>
+      </form>
+    </div>
+    <!-- Gulf Form Panel -->
+    <div id="gulfContent" class="report-panel">
+      <div class="panel-header">
+        <div class="panel-brand gulf">
+          <div class="brand-icon"><i class="fas fa-building"></i></div>
+          <div class="brand-text">
+            <h2>Gulf Technical Report</h2>
+            <p>Enter monthly activity metrics for Gulf line of business</p>
+          </div>
+        </div>
+        <div class="panel-actions">
+          <button onclick="saveDraft('gulf')" class="action-btn secondary">
+            <i class="fas fa-save"></i>
+            Save Progress
+          </button>
+        </div>
+      </div>
+      <form id="gulfForm" class="professional-form">
+        <!-- Report Period -->
+        <div class="form-section">
+          <div class="section-header">
+            <h3>Report Period</h3>
+            <p>Select the reporting month for this submission</p>
+          </div>
+          <div class="period-selector">
+            <div class="input-group">
+              <label for="gulfMonth">Reporting Month</label><input type="month" id="gulfMonth" name="month" required="" class="form-input" />
+              <div class="input-note">Reports are typically submitted monthly</div>
+            </div>
+          </div>
+        </div>
+        <!-- Activity Metrics -->
+        <div class="form-section">
+          <div class="section-header">
+            <h3>Activity Metrics</h3>
+            <p>Enter the number of activities completed during the reporting period</p>
+          </div>
+          <div class="metrics-grid">
+            <!-- Courtesy Visits -->
+            <div data-field="customerCourtesyVisits" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-users"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">Customer Courtesy Visits</label>
+                <p class="metric-description">Regular customer relationship and service visits</p>
+                <input type="number" id="gulfCustomerCourtesyVisits" name="customerCourtesyVisits" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="gulfCustomerCourtesyVisits-error" class="field-validation"></div>
+              </div>
+            </div>
+            <!-- Product Equivalent -->
+            <div data-field="productEquivalent" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-box"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">Technical enquiries / Proposals</label>
+                <p class="metric-description">Product equivalent assessments and evaluations</p>
+                <input type="number" id="gulfProductEquivalent" name="productEquivalent" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="gulfProductEquivalent-error" class="field-validation"></div>
+              </div>
+            </div>
+            <!-- Customer Training -->
+            <!-- Internal Technical Sessions -->
+              <div data-field="internalTraining" class="metric-card">
+                <div class="metric-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                <div class="metric-content">
+                  <label class="metric-label">Internal Technical Sessions</label>
+                  <p class="metric-description">Training sessions conducted internally</p>
+                  <input type="number" id="gulfInternalTraining" name="internalTraining"
+                          min="0" max="9999" step="1" onwheel="this.blur()" 
+                          placeholder="0" required class="form-input" />
+                  <div id="gulfInternalTraining-error" class="field-validation"></div>
+                </div>
+              </div>
+
+              <!-- Onsite Customer Trainings -->
+              <div data-field="onsiteTraining" class="metric-card">
+                <div class="metric-icon"><i class="fas fa-users-cog"></i></div>
+                <div class="metric-content">
+                  <label class="metric-label">Onsite Customer Trainings</label>
+                  <p class="metric-description">Training sessions at customer sites</p>
+                  <input type="number" id="gulfOnsiteTraining" name="onsiteTraining" 
+                          min="0" max="9999" step="1" onwheel="this.blur()" 
+                          placeholder="0" required class="form-input" />
+                  <div id="gulfOnsiteTraining-error" class="field-validation"></div>
+                </div>
+              </div>
+            <!-- Business Opportunity -->
+            <div data-field="businessOpportunity" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-chart-line"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">Business Opportunities</label>
+                <p class="metric-description">New business opportunities identified</p>
+                <input type="number" id="gulfBusinessOpportunity" name="businessOpportunity" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="gulfBusinessOpportunity-error" class="field-validation"></div>
+              </div>
+            </div>
+            <!-- Complaint Handled -->
+            <div data-field="complaintHandled" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-handshake"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">Complaints Handled</label>
+                <p class="metric-description">Customer complaints resolved and closed</p>
+                <input type="number" id="gulfComplaintHandled" name="complaintHandled" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="gulfComplaintHandled-error" class="field-validation"></div>
+              </div>
+            </div>
+            <!-- Field Trial -->
+            <div data-field="fieldTrial" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-flask"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">Product Field Trials</label>
+                <p class="metric-description">Product field trials and testing conducted</p>
+                <input type="number" id="gulfFieldTrial" name="fieldTrial" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="gulfFieldTrial-error" class="field-validation"></div>
+              </div>
+            </div>
+            <!-- Lubrication Survey -->
+            <div data-field="lubricationSurvey" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-cogs"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">Lubrication Surveys</label>
+                <p class="metric-description">Lubrication system assessments and audits</p>
+                <input type="number" id="gulfLubricationSurvey" name="lubricationSurvey" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="gulfLubricationSurvey-error" class="field-validation"></div>
+              </div>
+            </div>
+            <!-- DVR Endorsement -->
+            <div data-field="dvrEndorsement" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-certificate"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">DVR Endorsements</label>
+                <p class="metric-description">DVR endorsements processed and approved</p>
+                <input type="number" id="gulfDvrEndorsement" name="dvrEndorsement" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="gulfDvrEndorsement-error" class="field-validation"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Save Draft -->
+        <div class="submit-section">
+          <button type="button" onclick="saveDraft('gulf')" class="action-btn secondary">
+            <span id="gulfSpinner" class="btn-spinner hidden"><i class="fas fa-spinner fa-spin"></i></span><i class="fas fa-save"></i>
+            Save Draft &amp; Continue
+          </button>
+          <div class="draft-note">
+            <i class="fas fa-info-circle"></i>
+            This will save your progress locally. Final submission happens in the Review step.
+          </div>
+        </div>
+      </form>
+    </div>
+    <!-- Commercial Form Panel -->
+    <div id="commercialContent" class="report-panel">
+      <div class="panel-header">
+        <div class="panel-brand commercial">
+          <div class="brand-icon"><i class="fas fa-building"></i></div>
+          <div class="brand-text">
+            <h2>Commercial Technical Report</h2>
+            <p>Enter monthly activity metrics for Commercial line of business</p>
+          </div>
+        </div>
+        <div class="panel-actions">
+          <button onclick="saveDraft('commercial')" class="action-btn secondary">
+            <i class="fas fa-save"></i>
+            Save Progress
+          </button>
+        </div>
+      </div>
+      <form id="commercialForm" class="professional-form">
+        <!-- Report Period -->
+        <div class="form-section">
+          <div class="section-header">
+            <h3>Report Period</h3>
+            <p>Select the reporting month for this submission</p>
+          </div>
+          <div class="period-selector">
+            <div class="input-group">
+              <label for="commercialMonth">Reporting Month</label><input type="month" id="commercialMonth" name="month" required="" class="form-input" />
+              <div class="input-note">Reports are typically submitted monthly</div>
+            </div>
+          </div>
+        </div>
+        <!-- Activity Metrics -->
+        <div class="form-section">
+          <div class="section-header">
+            <h3>Activity Metrics</h3>
+            <p>Enter the number of activities completed during the reporting period</p>
+          </div>
+          <div class="metrics-grid">
+            <!-- Courtesy Visits -->
+            <div data-field="customerCourtesyVisits" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-users"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">Customer Courtesy Visits</label>
+                <p class="metric-description">Regular customer relationship and service visits</p>
+                <input type="number" id="commercialCustomerCourtesyVisits" name="customerCourtesyVisits" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="commercialCustomerCourtesyVisits-error" class="field-validation"></div>
+              </div>
+            </div>
+            <!-- Product Equivalent -->
+            <div data-field="productEquivalent" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-box"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">Technical enquiries / Proposals</label>
+                <p class="metric-description">Product equivalent assessments and evaluations</p>
+                <input type="number" id="commercialProductEquivalent" name="productEquivalent" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="commercialProductEquivalent-error" class="field-validation"></div>
+              </div>
+            </div>
+            <!-- Customer Training -->
+            <!-- Internal Technical Sessions -->
+              <div data-field="internalTraining" class="metric-card">
+                <div class="metric-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                <div class="metric-content">
+                  <label class="metric-label">Internal Technical Sessions</label>
+                  <p class="metric-description">Training sessions conducted internally</p>
+                  <input type="number" id="commercialInternalTraining" name="internalTraining"
+                          min="0" max="9999" step="1" onwheel="this.blur()" 
+                          placeholder="0" required class="form-input" />
+                  <div id="commercialInternalTraining-error" class="field-validation"></div>
+                </div>
+              </div>
+
+              <!-- Onsite Customer Trainings -->
+              <div data-field="onsiteTraining" class="metric-card">
+                <div class="metric-icon"><i class="fas fa-users-cog"></i></div>
+                <div class="metric-content">
+                  <label class="metric-label">Onsite Customer Trainings</label>
+                  <p class="metric-description">Training sessions at customer sites</p>
+                  <input type="number" id="commercialOnsiteTraining" name="onsiteTraining"
+                          min="0" max="9999" step="1" onwheel="this.blur()" 
+                          placeholder="0" required class="form-input" />
+                  <div id="commercialOnsiteTraining-error" class="field-validation"></div>
+                </div>
+              </div>
+            <!-- Business Opportunity -->
+            <div data-field="businessOpportunity" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-chart-line"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">Business Opportunities</label>
+                <p class="metric-description">New business opportunities identified</p>
+                <input type="number" id="commercialBusinessOpportunity" name="businessOpportunity" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="commercialBusinessOpportunity-error" class="field-validation"></div>
+              </div>
+            </div>
+            <!-- Complaint Handled -->
+            <div data-field="complaintHandled" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-handshake"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">Complaints Handled</label>
+                <p class="metric-description">Customer complaints resolved and closed</p>
+                <input type="number" id="commercialComplaintHandled" name="complaintHandled" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="commercialComplaintHandled-error" class="field-validation"></div>
+              </div>
+            </div>
+            <!-- Field Trial -->
+            <div data-field="fieldTrial" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-flask"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">Product Field Trials</label>
+                <p class="metric-description">Product field trials and testing conducted</p>
+                <input type="number" id="commercialFieldTrial" name="fieldTrial" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="commercialFieldTrial-error" class="field-validation"></div>
+              </div>
+            </div>
+            <!-- Lubrication Survey -->
+            <div data-field="lubricationSurvey" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-cogs"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">Lubrication Surveys</label>
+                <p class="metric-description">Lubrication system assessments and audits</p>
+                <input type="number" id="commercialLubricationSurvey" name="lubricationSurvey" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="commercialLubricationSurvey-error" class="field-validation"></div>
+              </div>
+            </div>
+            <!-- DVR Endorsement -->
+            <div data-field="dvrEndorsement" class="metric-card">
+              <div class="metric-icon"><i class="fas fa-certificate"></i></div>
+              <div class="metric-content">
+                <label class="metric-label">DVR Endorsements</label>
+                <p class="metric-description">DVR endorsements processed and approved</p>
+                <input type="number" id="commercialDvrEndorsement" name="dvrEndorsement" min="0" max="9999" step="1" onwheel="this.blur()" placeholder="0" required="" class="form-input" />
+                <div id="commercialDvrEndorsement-error" class="field-validation"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Save Draft -->
+        <div class="submit-section">
+          <button type="button" onclick="saveDraft('commercial')" class="action-btn secondary">
+            <span id="commercialSpinner" class="btn-spinner hidden"><i class="fas fa-spinner fa-spin"></i></span><i class="fas fa-save"></i>
+            Save Draft &amp; Continue
+          </button>
+          <div class="draft-note">
+            <i class="fas fa-info-circle"></i>
+            This will save your progress locally. Final submission happens in the Review step.
+          </div>
+        </div>
+      </form>
+    </div>
+    <!-- Review & Submit Panel -->
+    <div id="reviewContent" class="report-panel">
+      <div class="panel-header">
+        <div class="panel-brand review">
+          <div class="brand-icon"><i class="fas fa-clipboard-check"></i></div>
+          <div class="brand-text">
+            <h2>Review &amp; Submit</h2>
+            <p>Review your reports and submit officially</p>
+          </div>
+        </div>
+      </div>
+      <div class="review-content">
+        <!-- Petromin Summary -->
+        <div class="review-section">
+          <h3>Petromin Report Summary</h3>
+          <div class="summary-card">
+            <div class="summary-header">
+              <h4>Petromin LOB</h4>
+              <div id="petrominStatus" class="status-indicator"><i class="fas fa-edit"></i> Draft In Progress</div>
+            </div>
+            <div class="summary-body">
+              <div class="summary-item"><span class="item-label">Reporting Month:</span><span id="petrominSummaryMonth" class="item-value">Not selected</span></div>
+              <div id="petrominSummaryActivities" class="activities-summary"></div>
+              <div class="total-summary"><span class="total-label">Total Activities:</span><span id="petrominSummaryTotal" class="total-number">0</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- Gulf Summary -->
+        <div class="review-section">
+          <h3>Gulf Report Summary</h3>
+          <div class="summary-card">
+            <div class="summary-header">
+              <h4>Gulf LOB</h4>
+              <div id="gulfStatus" class="status-indicator"><i class="fas fa-edit"></i> Draft In Progress</div>
+            </div>
+            <div class="summary-body">
+              <div class="summary-item"><span class="item-label">Reporting Month:</span><span id="gulfSummaryMonth" class="item-value">Not selected</span></div>
+              <div id="gulfSummaryActivities" class="activities-summary"></div>
+              <div class="total-summary"><span class="total-label">Total Activities:</span><span id="gulfSummaryTotal" class="total-number">0</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- Commercial Summary -->
+        <div class="review-section">
+          <h3>Commercial Report Summary</h3>
+          <div class="summary-card">
+            <div class="summary-header">
+              <h4>Commercial LOB</h4>
+              <div id="commercialStatus" class="status-indicator"><i class="fas fa-edit"></i> Draft In Progress</div>
+            </div>
+            <div class="summary-body">
+              <div class="summary-item"><span class="item-label">Reporting Month:</span><span id="commercialSummaryMonth" class="item-value">Not selected</span></div>
+              <div id="commercialSummaryActivities" class="activities-summary"></div>
+              <div class="total-summary"><span class="total-label">Total Activities:</span><span id="commercialSummaryTotal" class="total-number">0</span></div>
+            </div>
+          </div>
+        </div>
+        <!-- Final Submission -->
+        <div class="final-submission">
+          <div class="submission-info">
+            <h3>Official Submission</h3>
+            <p>Submit all reports officially to complete the reporting process</p>
+            <div class="submission-note">
+              <i class="fas fa-exclamation-triangle"></i>
+              Once submitted, reports will be saved to Dataverse and can be updated if needed
+            </div>
+          </div>
+          <button id="submitAllButton" onclick="submitAllReports()" disabled="" class="action-btn primary large">
+            <span id="submitSpinner" class="btn-spinner hidden"><i class="fas fa-spinner fa-spin"></i></span><i class="fas fa-paper-plane"></i>
+            Submit All Reports Officially
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Dashboard Panel -->
+    <div id="dashboardContent" class="report-panel">
+      <div class="panel-header">
+        <div class="panel-brand dashboard">
+          <div class="brand-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="brand-text">
+            <h2>TSE Dashboard</h2>
+            <p>Your personal performance metrics and insights</p>
+          </div>
+        </div>
+        <div class="panel-actions" style="gap: 12px; align-items: center; display: flex;">
+          <div class="input-group" style="min-width: 240px;">
+            <label for="monthSlicer" class="visually-hidden">Filter by month</label
+            ><select id="monthSlicer" class="form-input">
+              <option value="__all__">All months</option>
+            </select>
+          </div>
+          <button onclick="refreshDashboard()" class="action-btn secondary"><i class="fas fa-sync-alt"></i> Refresh</button><button onclick="exportDashboard()" class="action-btn secondary"><i class="fas fa-download"></i> Export</button>
+        </div>
+      </div>
+      <div class="dashboard-content">
+        <!-- Status -->
+        <div id="dashboardStatus" class="dashboard-status">
+          <div class="status-message"><i class="fas fa-info-circle"></i><span id="dashboardStatusText">Loading dashboard data...</span></div>
+        </div>
+        <!-- KPI Grid -->
+        <div class="kpi-grid">
+          <div class="kpi-card primary">
+            <div class="kpi-icon"><i class="fas fa-users"></i></div>
+            <div class="kpi-content">
+              <div id="totalCourtesyVisits" class="kpi-value">0</div>
+              <div class="kpi-label">Customer Courtesy Visits</div>
+              <div id="courtesyVisitsChange" class="kpi-change neutral">No previous data</div>
+            </div>
+          </div>
+        <!-- Replace single Customer Training card with two cards -->
+          <div class="kpi-card success">
+            <div class="kpi-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+            <div class="kpi-content">
+              <div id="totalInternalTraining" class="kpi-value">0</div>
+              <div class="kpi-label">Internal Technical Sessions</div>
+              <div id="internalTrainingChange" class="kpi-change neutral">No previous data</div>
+            </div>
+          </div>
+          <div class="kpi-card success">
+            <div class="kpi-icon"><i class="fas fa-users-cog"></i></div>
+            <div class="kpi-content">
+              <div id="totalOnsiteTraining" class="kpi-value">0</div>
+              <div class="kpi-label">Onsite Customer Trainings</div>
+              <div id="onsiteTrainingChange" class="kpi-change neutral">No previous data</div>
+            </div>
+          </div>
+          <div class="kpi-card info">
+            <div class="kpi-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="kpi-content">
+              <div id="totalOpportunities" class="kpi-value">0</div>
+              <div class="kpi-label">Business Opportunities</div>
+              <div id="opportunitiesChange" class="kpi-change neutral">No previous data</div>
+            </div>
+          </div>
+          <div class="kpi-card warning">
+            <div class="kpi-icon"><i class="fas fa-handshake"></i></div>
+            <div class="kpi-content">
+              <div id="totalComplaints" class="kpi-value">0</div>
+              <div class="kpi-label">Complaints Handled</div>
+              <div id="complaintsChange" class="kpi-change neutral">No previous data</div>
+            </div>
+          </div>
+          <div class="kpi-card danger">
+            <div class="kpi-icon"><i class="fas fa-flask"></i></div>
+            <div class="kpi-content">
+              <div id="totalFieldTrials" class="kpi-value">0</div>
+              <div class="kpi-label">Product Field Trials</div>
+              <div id="fieldTrialsChange" class="kpi-change neutral">No previous data</div>
+            </div>
+          </div>
+          <div class="kpi-card secondary">
+            <div class="kpi-icon"><i class="fas fa-cogs"></i></div>
+            <div class="kpi-content">
+              <div id="totalSurveys" class="kpi-value">0</div>
+              <div class="kpi-label">Lubrication Surveys</div>
+              <div id="surveysChange" class="kpi-change neutral">No previous data</div>
+            </div>
+          </div>
+          <div class="kpi-card accent">
+            <div class="kpi-icon"><i class="fas fa-certificate"></i></div>
+            <div class="kpi-content">
+              <div id="totalDVR" class="kpi-value">0</div>
+              <div class="kpi-label">DVR Endorsements</div>
+              <div id="dvrChange" class="kpi-change neutral">No previous data</div>
+            </div>
+          </div>
+          <div class="kpi-card executive">
+            <div class="kpi-icon"><i class="fas fa-trophy"></i></div>
+            <div class="kpi-content">
+              <div id="totalActivities" class="kpi-value">0</div>
+              <div class="kpi-label">Total Activities</div>
+              <div id="totalActivitiesChange" class="kpi-change neutral">No previous data</div>
+            </div>
+          </div>
+        </div>
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <div class="actions-header"><h4>Quick Actions</h4></div>
+          <div class="actions-grid">
+            <div onclick="showReports()" class="action-card">
+              <div class="action-icon"><i class="fas fa-file-alt"></i></div>
+              <div class="action-content">
+                <div class="action-title">View Reports</div>
+                <div class="action-description">Browse submitted reports history</div>
+              </div>
+            </div>
+            <div onclick="exportDashboard()" class="action-card">
+              <div class="action-icon"><i class="fas fa-download"></i></div>
+              <div class="action-content">
+                <div class="action-title">Export Data</div>
+                <div class="action-description">Download dashboard data</div>
+              </div>
+            </div>
+            <div onclick="refreshDashboard()" class="action-card">
+              <div class="action-icon"><i class="fas fa-sync-alt"></i></div>
+              <div class="action-content">
+                <div class="action-title">Refresh Data</div>
+                <div class="action-description">Update latest metrics</div>
+              </div>
+            </div>
+            <div onclick="resetAllForms()" class="action-card">
+              <div class="action-icon"><i class="fas fa-redo"></i></div>
+              <div class="action-content">
+                <div class="action-title">New Period</div>
+                <div class="action-description">Start new reporting period</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /dashboard-content -->
+    </div>
+    <!-- /dashboardContent -->
+  </main>
+  <!-- Navigation Footer -->
+  <section class="navigation-footer">
+  <div class="footer-content">
+    <div class="footer-actions">
+      <button type="button" onclick="navigateBack()" class="action-btn secondary">
+        <i class="fas fa-arrow-left"></i> Previous
+      </button>
+      <button type="button" onclick="navigateNext()" class="action-btn primary">
+        Next <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+</section>
+
+</div>
+<!-- Tiny bootstrap: year stamp, numeric defaults, month max, and legacy aliases -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    // Footer year
+    var yearSpan = document.getElementById('yearSpan');
+    if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+
+    // Seed numeric inputs with a real 0 (placeholder isn't a value)
+    document.querySelectorAll('#tsr-app input[type="number"]').forEach(function (el) {
+      if (el.value === '' || el.value == null) el.value = '0';
+    });
+
+    // Cap month inputs at current month and set default if empty
+    var ym = new Date().toISOString().slice(0, 7);
+    ['petrominMonth', 'gulfMonth', 'commercialMonth'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.max = ym;
+      if (!el.value) el.value = ym; // optional default
+    });
+
+    // Optional: keep old onclicks working if any template still uses them
+    window.goPrevStep = function(){ if (typeof navigateBack === 'function') navigateBack(); };
+    window.goNextStep = function(){ if (typeof navigateNext === 'function') navigateNext(); };
+  });
+</script>
+<div class="row sectionBlockLayout text-start" style="display: flex; flex-wrap: wrap; margin: 0px; min-height: auto; padding: 8px;">
+  <div class="container" style="padding: 0px; display: flex; flex-wrap: wrap;"><div class="col-lg-12 columnBlockLayout" style="flex-grow: 1; display: flex; flex-direction: column; min-width: 250px;"></div></div>
+</div>
