@@ -1,3 +1,9 @@
+<!-- Pass portal user context to JS (Liquid is processed in webpage copy, not in custom JS files) -->
+<script>
+  window.PORTAL_CONTACT_ID = '{{ user.id }}';
+  window.PORTAL_USER_NAME = '{{ user.fullname }}';
+  window.PORTAL_USER_EMAIL = '{{ user.emailaddress1 }}';
+</script>
 <div id="tsr-app">
   <!-- Notification container for Notify.show(...) -->
   <div id="notificationContainer" aria-live="polite" aria-atomic="true" class="notification-container"></div>
