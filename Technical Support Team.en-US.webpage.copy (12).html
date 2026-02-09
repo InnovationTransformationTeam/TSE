@@ -1,9 +1,9 @@
-<!-- Pass portal user context to JS (Liquid is processed in webpage copy, not in custom JS files) -->
-<script>
-  window.PORTAL_CONTACT_ID = '{{ user.id }}';
-  window.PORTAL_USER_NAME = '{{ user.fullname }}';
-  window.PORTAL_USER_EMAIL = '{{ user.emailaddress1 }}';
-</script>
+<!-- Pass portal user context to JS via hidden inputs (Liquid is processed in HTML attributes but not in script blocks) -->
+<div id="portal-user-context" style="display:none;">
+  <input type="hidden" id="liquid-contact-id" value="{{ user.id }}" />
+  <input type="hidden" id="liquid-user-name" value="{{ user.fullname }}" />
+  <input type="hidden" id="liquid-user-email" value="{{ user.emailaddress1 }}" />
+</div>
 <div id="tsr-app">
   <!-- Notification container for Notify.show(...) -->
   <div id="notificationContainer" aria-live="polite" aria-atomic="true" class="notification-container"></div>

@@ -89,45 +89,46 @@
      PORTAL USER CONTEXT
   ========================== */
   (function setPortalUser() {
-    // Extract username from DOM first
-    const usernameElement = document.querySelector('.username');
-    if (usernameElement && usernameElement.textContent) {
-      const extractedName = usernameElement.textContent.trim();
-      if (extractedName && extractedName !== '') {
-        window.PORTAL_USER_NAME = extractedName;
-        console.log('Username set to:', extractedName);
-      }
-    }
-
-    // Handle Contact ID
-    const candidates = {
-      id:
-        window.PORTAL_CONTACT_ID ||
-        document.querySelector('meta[name="microsoft-powerpages-userid"]')?.content ||
-        document.querySelector('input[name="ContactId"]')?.value ||
-        '{{ user.id }}'
-    };
-
     function cleanGuid(g) {
       if (!g) return null;
       const s = String(g).trim();
-      if (!s || s === '{{ user.id }}') return null;
+      // Reject empty, Liquid template literals, and placeholder values
+      if (!s || s.includes('{{') || s === 'null' || s === 'undefined') return null;
       return s.replace(/[{}]/g, '');
     }
 
-    window.PORTAL_CONTACT_ID = cleanGuid(candidates.id);
+    function cleanLiquid(val) {
+      if (!val) return null;
+      const s = String(val).trim();
+      if (!s || s.includes('{{') || s === 'null' || s === 'undefined') return null;
+      return s;
+    }
 
-    // Set email if available
-    const emailCandidate = window.PORTAL_USER_EMAIL || '{{ user.emailaddress1 }}';
-    window.PORTAL_USER_EMAIL = (emailCandidate && emailCandidate !== '{{ user.emailaddress1 }}') ? emailCandidate : null;
+    // 1. Contact ID — check multiple sources in priority order
+    const contactId =
+      cleanGuid(window.PORTAL_CONTACT_ID) ||
+      cleanGuid(document.getElementById('liquid-contact-id')?.value) ||
+      cleanGuid(document.querySelector('meta[name="microsoft-powerpages-userid"]')?.content) ||
+      cleanGuid(document.querySelector('input[name="ContactId"]')?.value);
 
-    // Fallback if username still not set
-    if (!window.PORTAL_USER_NAME) {
-      window.PORTAL_USER_NAME = 'Portal User';
+    window.PORTAL_CONTACT_ID = contactId;
+
+    // 2. Username — check Liquid hidden input, then DOM .username element
+    const liquidName = cleanLiquid(document.getElementById('liquid-user-name')?.value);
+    const domName = document.querySelector('.username')?.textContent?.trim();
+
+    if (!window.PORTAL_USER_NAME || window.PORTAL_USER_NAME === 'Portal User') {
+      window.PORTAL_USER_NAME = liquidName || domName || window.PORTAL_USER_NAME || 'Portal User';
+    }
+
+    // 3. Email
+    const liquidEmail = cleanLiquid(document.getElementById('liquid-user-email')?.value);
+    if (!window.PORTAL_USER_EMAIL) {
+      window.PORTAL_USER_EMAIL = liquidEmail || null;
     }
 
     if (!window.PORTAL_CONTACT_ID) {
-      console.log('TSR: Using username-based filtering (Contact ID not needed)');
+      console.log('TSR: Contact ID not available — records will use username-based filtering');
     } else {
       console.log('Portal contact:', window.PORTAL_CONTACT_ID);
     }
